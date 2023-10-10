@@ -2,6 +2,7 @@
 This is a module for inverse distance weighting (IDW) Spatial Interpolation
 """
 import numpy as np
+import faiss
 from ..utils.distance import haversine, euclidean
 from ..base import Base
 
@@ -77,12 +78,16 @@ class IDW(Base):
         """The function call to predict using the interpolated data
         in IDW interpolation. This should not be called directly.
         """
-        
-        dist = self.distance(self.X, X)
+        d = self.X.shape[1]
+        index = faiss.IndexFlatL2(d)
+        index.add(self.X)
+        query_vector = X
+        k = self.X.shape[0]
+        dist, ind = index.search(query_vector,k)
         dist = np.where(dist==0,1e-10,dist)
 
         weights = 1 / np.power(dist, self.exponent)
-        result = (weights * self.y[:, None]).sum(axis=0) / weights.sum(axis=0)
+        result = (weights * self.y[ind:, None]).sum(axis=0) / weights.sum(axis=0)
 
         # if point is from train data, ground truth must not change
         # for i in range(X.shape[0]):
