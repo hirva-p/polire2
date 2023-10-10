@@ -6,4 +6,6 @@ scipy
 seaborn
 Shapely
 xgboost
+faiss-cpu
+faiss-gpu
 # GPy
