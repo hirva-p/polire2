@@ -88,6 +88,7 @@ class IDW(Base):
 
         weights = 1 / np.power(dist, self.exponent)
         result = (weights * self.y[ind]).sum(axis=1)/ weights.sum(axis=1)
+       
 
         # if point is from train data, ground truth must not change
         # for i in range(X.shape[0]):
